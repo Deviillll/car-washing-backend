@@ -1,0 +1,165 @@
+const mongoose = require('mongoose');
+
+const Schema = mongoose.Schema;
+
+const TimeSlotSchema = new Schema({
+  startTime: { type: String, required: true },
+  endTime: { type: String, required: true },
+  isAvailable: { type: Boolean, required: true }
+});
+
+const SpecialTimeSlotSchema = new Schema({
+  date: { type: Date, required: true }, // Specific date
+  timeSlots: [TimeSlotSchema]
+});
+
+const TimeTableSchema = new Schema({
+  userId: { type: Schema.Types.ObjectId, required: true, ref: 'User' },
+  regularSlots: {
+    Monday: [TimeSlotSchema],
+    Tuesday: [TimeSlotSchema],
+    Wednesday: [TimeSlotSchema],
+    Thursday: [TimeSlotSchema],
+    Friday: [TimeSlotSchema],
+    Saturday: [TimeSlotSchema],
+    Sunday: [TimeSlotSchema]
+  },
+  specialSlots: [SpecialTimeSlotSchema]
+});
+
+const TimeTable = mongoose.model('TimeTable', TimeTableSchema);
+
+module.exports = TimeTable;
+
+
+
+
+
+
+
+
+
+const express = require('express');
+const mongoose = require('mongoose');
+const TimeTable = require('./models/TimeTable'); // Adjust the path as necessary
+
+const router = express.Router();
+
+// Connect to MongoDB (adjust the URI as necessary)
+mongoose.connect('mongodb://localhost:27017/scheduleDB', {
+  useNewUrlParser: true,
+  useUnifiedTopology: true
+});
+
+// Add a regular time slot
+router.post('/addRegularSlot', async (req, res) => {
+  const { userId, day, startTime, endTime, isAvailable } = req.body;
+  
+  try {
+    const timeTable = await TimeTable.findOne({ userId });
+    
+    if (!timeTable) {
+      return res.status(404).send('TimeTable not found');
+    }
+    
+    timeTable.regularSlots[day].push({ startTime, endTime, isAvailable });
+    await timeTable.save();
+    
+    res.status(200).send('Regular time slot added successfully');
+  } catch (err) {
+    res.status(500).send(err.message);
+  }
+});
+
+// Add a special time slot
+router.post('/addSpecialSlot', async (req, res) => {
+  const { userId, date, startTime, endTime, isAvailable } = req.body;
+  
+  try {
+    const timeTable = await TimeTable.findOne({ userId });
+    
+    if (!timeTable) {
+      return res.status(404).send('TimeTable not found');
+    }
+    
+    timeTable.specialSlots.push({ date, timeSlots: [{ startTime, endTime, isAvailable }] });
+    await timeTable.save();
+    
+    res.status(200).send('Special time slot added successfully');
+  } catch (err) {
+    res.status(500).send(err.message);
+  }
+});
+
+// Get time slots for a specific day
+router.get('/getTimeSlots', async (req, res) => {
+  const { userId, date } = req.query;
+  
+  try {
+    const timeTable = await TimeTable.findOne({ userId });
+    
+    if (!timeTable) {
+      return res.status(404).send('TimeTable not found');
+    }
+    
+    const dateObj = new Date(date);
+    
+    const specialSlot = timeTable.specialSlots.find(
+      (slot) => slot.date.toDateString() === dateObj.toDateString()
+    );
+    
+    if (specialSlot) {
+      return res.status(200).json(specialSlot.timeSlots);
+    }
+    
+    const dayName = dateObj.toLocaleString('en-US', { weekday: 'long' });
+    const regularSlots = timeTable.regularSlots[dayName];
+    
+    res.status(200).json(regularSlots);
+  } catch (err) {
+    res.status(500).send(err.message);
+  }
+});
+
+module.exports = router;
+
+
+
+
+
+
+
+
+
+
+
+const mongoose = require('mongoose');
+
+const scheduleSchema = new mongoose.Schema({
+    start: { type: String, required: true }, // e.g., "09:00"
+    end: { type: String, required: true }, // e.g., "17:00"
+    day: { type: String }, // optional, e.g., "Monday"
+    isActive: { type: Boolean, default: true },
+    duration: { type: String, required: true, enum: ['weekly', 'single', 'multiple'] },
+    dates: [{ type: Date }] // Array of dates for special days
+}, {
+    validateBeforeSave: true
+});
+
+// Custom validation logic
+scheduleSchema.pre('save', function (next) {
+    if (this.duration === 'single' && this.dates.length !== 1) {
+        return next(new Error('Exactly one date is required for single duration'));
+    }
+    if (this.duration === 'multiple' && this.dates.length < 1) {
+        return next(new Error('At least one date is required for multiple duration'));
+    }
+    if (this.duration === 'weekly' && this.dates.length > 0) {
+        return next(new Error('Dates should not be provided for weekly duration'));
+    }
+    next();
+});
+
+const Schedule = mongoose.model('Schedule', scheduleSchema);
+
+module.exports = Schedule;

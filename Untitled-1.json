@@ -1,0 +1,129 @@
+SchedulePolicy:
+Type -> Custom -> Weekly
+
+Custom Schedule Policy
+
+date
+start -> end time [array
+] 
+Validation (Start time less than end time)
+
+Weekly Schedule Policy
+days [mon, tues, wed, thur, fri, sat, sun
+]
+
+date
+start -> end time [array
+] 
+Validation (Start time less than end time)
+
+
+
+{
+    "event_types": [
+        {
+            "active_availability_rule": {
+                "id": 169219924,
+                "name": "Working hours",
+                "owner_id": 40484929,
+                "rules": [
+                    {
+                        "type": "wday",
+                        "intervals": [],
+                        "wday": "sunday"
+                    },
+                    {
+                        "type": "wday",
+                        "intervals": [
+                            {
+                                "from": "09:00",
+                                "to": "17:00"
+                            }
+                        ],
+                        "wday": "monday"
+                    },
+                    {
+                        "type": "wday",
+                        "intervals": [
+                            {
+                                "from": "09:00",
+                                "to": "17:00"
+                            }
+                        ],
+                        "wday": "tuesday"
+                    },
+                    {
+                        "type": "wday",
+                        "intervals": [
+                            {
+                                "from": "09:00",
+                                "to": "17:00"
+                            }
+                        ],
+                        "wday": "wednesday"
+                    },
+                    {
+                        "type": "wday",
+                        "intervals": [
+                            {
+                                "from": "09:00",
+                                "to": "17:00"
+                            }
+                        ],
+                        "wday": "thursday"
+                    },
+                    {
+                        "type": "wday",
+                        "intervals": [
+                            {
+                                "from": "09:00",
+                                "to": "13:00"
+                            },
+                            {
+                                "from": "15:00",
+                                "to": "17:00"
+                            }
+                        ],
+                        "wday": "friday"
+                    },
+                    {
+                        "type": "wday",
+                        "intervals": [],
+                        "wday": "saturday"
+                    },
+                    {
+                        "type": "date",
+                        "intervals": [
+                            {
+                                "from": "09:00",
+                                "to": "13:00"
+                            }
+                        ],
+                        "date": "2025-01-07"
+                    }
+                ],
+                "rules_version": 1,
+                "timezone": "America/New_York"
+            },
+            "admin_managed": false,
+            "availability_override": false,
+            "color": "#8247f5",
+            "duration_description": "30 mins",
+            "group_managed": false,
+            "id": 180579822,
+            "internal_note": null,
+            "kind": "solo",
+            "kind_description": "One-on-One",
+            "location_types": [],
+            "membership_rules_version": null,
+            "name": "30 Minute Meeting",
+            "policy": {
+                "edit": true
+            },
+            "user_availability_rule_id": 169219924
+        }
+    ],
+    "id": 40484929,
+    "name": "P R Devil",
+    "type": "User"
+}
