@@ -3,9 +3,11 @@
   "version": "1.0.0",
   "main": "index.js",
   "type": "module",
-  "scripts": {
-    "start": "nodemon index.js"
-  },
+ "scripts": {
+  "start:prod": "npm run build --omit=dev",
+  "start": "nodemon index.js"
+}
+,
   "keywords": [],
   "author": "",
   "license": "ISC",

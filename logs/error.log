@@ -256,3 +256,6 @@
 {"message":"You have reached the maximum number of companies","timestamp":"2025-02-06T12:21:13.296Z"}
 {"message":"TokenExpiredError: jwt expired","timestamp":"2025-02-06T13:41:34.294Z"}
 {"message":"Please upload a logo","timestamp":"2025-02-07T07:52:37.946Z"}
+{"message":"You have reached the maximum number of companies","timestamp":"2025-02-07T10:18:34.817Z"}
+{"message":"Please upload a logo","timestamp":"2025-02-07T10:28:24.439Z"}
+{"message":"Please upload a logo","timestamp":"2025-02-07T10:28:33.351Z"}
