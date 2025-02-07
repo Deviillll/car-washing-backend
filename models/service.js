@@ -17,7 +17,7 @@ const serviceSchema = new mongoose.Schema({
     ref: "Company",
   },
  time :{
-    type: Number,
+    type: String,
     required: true,
  },
  category :{

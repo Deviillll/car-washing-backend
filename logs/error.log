@@ -235,3 +235,24 @@
 {"message":"Invalid Credentials","timestamp":"2025-01-29T11:59:03.011Z"}
 {"message":"User Already Exists","timestamp":"2025-01-29T12:59:35.468Z"}
 {"message":"User Already Exists","timestamp":"2025-01-29T13:01:41.754Z"}
+{"message":"TokenExpiredError: jwt expired","timestamp":"2025-01-31T12:18:18.539Z"}
+{"message":"Please fill all fields","timestamp":"2025-01-31T13:57:21.343Z"}
+{"message":"Please fill all fields","timestamp":"2025-01-31T13:57:39.004Z"}
+{"message":"Please fill all fields","timestamp":"2025-01-31T14:02:34.152Z"}
+{"message":"Please fill all fields","timestamp":"2025-01-31T14:06:18.929Z"}
+{"message":"please verify your email","timestamp":"2025-02-04T11:17:55.115Z"}
+{"message":"please verify your email","timestamp":"2025-02-04T11:18:04.128Z"}
+{"message":"You have reached the maximum number of companies","timestamp":"2025-02-06T11:04:55.735Z"}
+{"message":"You have reached the maximum number of companies","timestamp":"2025-02-06T11:11:48.190Z"}
+{"message":"Please fill all fields","timestamp":"2025-02-06T11:13:35.984Z"}
+{"message":"Please fill all fields","timestamp":"2025-02-06T11:15:52.068Z"}
+{"message":"Please fill all fields","timestamp":"2025-02-06T11:18:09.284Z"}
+{"message":"Please fill all fields","timestamp":"2025-02-06T11:20:52.504Z"}
+{"message":"Catagory already exist","timestamp":"2025-02-06T11:32:57.137Z"}
+{"message":"TokenExpiredError: jwt expired","timestamp":"2025-02-06T12:02:06.656Z"}
+{"message":"company id is required","timestamp":"2025-02-06T12:03:02.526Z"}
+{"message":"You have reached the maximum number of companies","timestamp":"2025-02-06T12:12:32.361Z"}
+{"message":"You have reached the maximum number of companies","timestamp":"2025-02-06T12:13:59.506Z"}
+{"message":"You have reached the maximum number of companies","timestamp":"2025-02-06T12:21:13.296Z"}
+{"message":"TokenExpiredError: jwt expired","timestamp":"2025-02-06T13:41:34.294Z"}
+{"message":"Please upload a logo","timestamp":"2025-02-07T07:52:37.946Z"}

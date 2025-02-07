@@ -79,14 +79,79 @@ class ServiceClass {
    }
   }
 
+
+  static async getServices(req, res) {
+    try {
+      const { companyId } = req.body;
+      const userId = req.user;
+      const role = req.role;
+
+      if (!companyId) {
+        res.status(400);
+        throw new Error("company id is required");
+      }
+
+      const getRole = await Role.findById({ _id: role });
+      if (!getRole) {
+        res.status(401);
+        throw new Error("Unauthorized access");
+      }
+
+      if (getRole.role !== "admin" && getRole.role !== "manager") {
+        res.status(401);
+        throw new Error("Unauthorized access");
+      }
+      const objectRoleID = mongoose.isValidObjectId(companyId);
+
+      if (!objectRoleID) {
+        res.status(400);
+        throw new Error("Invalid company");
+      }
+
+      const resolver = await Resolver.findOne({
+        user_id: userId,
+        company_id: companyId
+      });
+      if (!resolver) {
+        res.status(401);
+        throw new Error("Unauthorized access");
+      }
+
+      const service = await Service.find({ company: companyId });
+      if (!service) {
+        res.status(404);
+
+        throw new Error("No service found");
+
+      }
+
+      return res
+        .status(200)
+        .json({
+          status: 200,
+          message: "data fetch successfully",
+          data: service,
+        });
+    } catch (error) {
+      throw new Error(error.message);
+    }
+  }
+
  static async addCatagory(req, res) {
     try {
-      const { name, description, icon, companyId } = req.body;
+      const { name, description, companyId } = req.body;
 
     const userId = req.user;
     const role = req.role;
+    const file = req.file;
 
-    if (!name || !description || !icon || !companyId) {
+    if (!req.file) {
+      res.status(400);
+      throw new Error("Please upload a logo");
+    }
+
+
+    if (!name || !description || !companyId) {
       res.status(400);
       throw new Error("Please fill all fields");
     }
@@ -129,7 +194,7 @@ class ServiceClass {
     const newCatagory = new Catagory({
       name,
       description,
-      icon,
+      icon: file.path,
       company: companyId,
     });
 
@@ -148,6 +213,66 @@ class ServiceClass {
       throw new Error(error.message);
     }
   }
+
+  // get all categories
+  static async getCatagory(req, res) {
+    try {
+      const { companyId } = req.body;
+      const userId = req.user;
+      const role = req.role;
+
+      if (!companyId) {
+        res.status(400);
+        throw new Error("company id is required");
+      }
+
+      const getRole = await Role.findById({ _id: role });
+      if (!getRole) {
+        res.status(401);
+        throw new Error("Unauthorized access");
+      }
+
+      if (getRole.role !== "admin" && getRole.role !== "manager") {
+        res.status(401);
+        throw new Error("Unauthorized access");
+      }
+      const objectRoleID = mongoose.isValidObjectId(companyId);
+
+      if (!objectRoleID) {
+        res.status(400);
+        throw new Error("Invalid company");
+      }
+
+      const resolver = await Resolver.findOne({
+        user_id: userId,
+        company_id: companyId
+      });
+
+
+      if (!resolver) {
+        res.status(401);
+        throw new Error("Unauthorized access");
+      }
+
+      const catagory = await Catagory.find({ company: companyId });
+      if (!catagory) {
+        res.status(404);
+        throw new Error("No catagory found");
+      }
+
+      return res
+        .status(200)
+        .json({
+          status: 200,
+          message: "data fetch successfully",
+          data: catagory,
+        });
+
+
+      } catch (error) {
+        throw new Error(error.message);
+      }
+    }   
 }
 
 

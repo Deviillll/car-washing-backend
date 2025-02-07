@@ -9,75 +9,86 @@ import crypto from "crypto";
 import VerificationToken from "../models/verifyToken.js";
 import sendEmail from "../utils/mail/mail.js";
 class Company {
+
+
   static async createCompanyProfile(req, res) {
     const file = req.file;
     const userId = req.user;
     const role = req.role;
-    const roleExist = await Role.findById({ _id: role });
-
-    if (roleExist.role !== "admin") {
-      res.status(401);
-      throw new Error("Unauthorized access");
-    }
-
-    const { companyName, street, zip, city, email, phone, description ,isMultipleBookingAllow,isAutoConfirmBookingAllow} =
-      req.body;
-
-    if (!req.file) {
-      res.status(400);
-      throw new Error("Please upload a logo");
-    }
-    if (
-      !companyName ||
-      !street ||
-      !zip ||
-      !city ||
-      !email ||
-      !phone ||
-      !description
-    ) {
-      res.status(400);
-      throw new Error("Please fill all fields");
-    }
-    const companyExist = await CompanyProfile.find({ user_id: userId });
-
-    const totalCompanies = companyExist?.length > 2;
-    if (totalCompanies) {
-      await fs.unlink(file.path);
-      res.status(400);
-      throw new Error("You have reached the maximum number of companies");
-    }
-
-    // if (companyExist) {
-    //   await fs.unlink(file.path);
-    //   res.status(400);
-    //   throw new Error("Company already exist");
-    // }
-
-    const newCompany = new CompanyProfile({
-      company_name: companyName,
-      email,
-      phone,
-      description,
-      user_id: userId,
-      logo: file.path,
-      street,
-      zip,
-      city,
-      isMultipleBookingAllow,
-      isAutoConfirmBookingAllow
-    });
-    // es6 to es8
-
-    const savedCompany = await newCompany.save();
-    const resolver = Resolver.create({
-      user_id: userId,
-      company_id: savedCompany._id,
-    });
-
-    res
-      .status(201)
-      .json({ status: 201, message: "Company profile created successfully" });
+   
+    
+   
+      const roleExist = await Role.findById({ _id: role });
+  
+      if (roleExist.role !== "admin") {
+        res.status(401);
+        throw new Error("Unauthorized access");
+      }
+  
+      const { companyName, street, zip, city, email, phone, description ,isMultipleBookingAllow,isAutoConfirmBookingAllow} =
+        req.body;
+        
+  
+      if (!req.file) {
+        res.status(400);
+        throw new Error("Please upload a logo");
+      }
+      if (
+        !companyName ||
+        !street ||
+        !zip ||
+        !city ||
+        !email ||
+        !phone ||
+        !description
+      ) {
+        res.status(400);
+        throw new Error("Please fill all fields");
+      }
+      const companyExist = await CompanyProfile.find({ user_id: userId });
+  
+      const totalCompanies = companyExist?.length > 2;
+      if (totalCompanies) {
+        await fs.unlink(file.path);
+        res.status(400);
+        throw new Error("You have reached the maximum number of companies");
+      }
+  
+      // if (companyExist) {
+      //   await fs.unlink(file.path);
+      //   res.status(400);
+      //   throw new Error("Company already exist");
+      // }
+  
+      const newCompany = new CompanyProfile({
+        company_name: companyName,
+        email,
+        phone,
+        description,
+        user_id: userId,
+        logo: file.path,
+        street,
+        zip,
+        city,
+        isMultipleBookingAllow,
+        isAutoConfirmBookingAllow
+      });
+      // es6 to es8
+  
+      const savedCompany = await newCompany.save();
+      const resolver = Resolver.create({
+        user_id: userId,
+        company_id: savedCompany._id,
+      });
+  
+      res
+        .status(201)
+        .json({ status: 201,data:{
+          companyId:savedCompany._id,
+          companyName:savedCompany.company_name,
+        },
+           message: "Company profile created successfully" });
+   
   }
 
   static async getAllCompaniesWithServices(req, res) {
@@ -122,6 +133,114 @@ class Company {
         data: companies,
       });
   }
+
+  // get single company
+  static async getCompany(req, res) {
+    const companyId = req.params.id;
+    try {
+      const company = await CompanyProfile.findById({ _id: companyId });
+  
+      if (!company) {
+        res.status(404);
+        throw new Error("Company not found");
+      }
+  
+      return res
+        .status(200)
+        .json({ status: 200, message: "data fetch successfully", data: company });
+    } catch (error) {
+      res.status(500);
+      throw new Error(error);
+      
+    }
+  }
+
+  // update company
+  static async updateCompany(req, res) {
+    const companyId = req.params.id;
+    const userId = req.user;
+    const role = req.role;
+    const file = req.file;
+    const roleExist = await Role.findById({ _id: role });
+
+    if (roleExist.role !== "admin") {
+      res.status(401);
+      throw new Error("Unauthorized access");
+    }
+
+    const { companyName, street, zip, city, email, phone, description } = req.body;
+
+    if (!req.file) {
+      res.status(400);
+      throw new Error("Please upload a logo");
+    }
+    if ( !companyName || !street || !zip || !city || !email || !phone || !description) {
+      res.status(400);
+      throw new Error("Please fill all fields");
+    }
+
+    const companyExist = await CompanyProfile.findById({ _id: companyId });
+
+    if (!companyExist) {
+      res.status(404);
+      throw new Error("Company does not exist");
+    }
+
+    if (companyExist.user_id.toString() !== userId) {
+      res.status(401);
+      throw new Error("Unauthorized access");
+    }
+
+    await fs.unlink(companyExist.logo);
+    companyExist.company_name = companyName;
+    companyExist.email = email;
+    companyExist.phone = phone;
+    companyExist.description = description;
+    companyExist.logo = file.path;
+    companyExist.street = street;
+    companyExist.zip = zip;
+    companyExist.city = city;
+
+    await companyExist.save();
+
+    res.status(200).json({ status: 200, message: "Company updated successfully" });
+  }
+
+
+
+
+
+  // delete company
+  static async deleteCompany(req, res) {
+    const companyId = req.params.id;
+    const userId = req.user;
+    const role = req.role;
+
+    const roleExist = await Role.findById({ _id: role });
+
+    if (roleExist.role !== "admin") {
+      res.status(401);
+      throw new Error("Unauthorized access");
+    }
+
+    const companyExist = await CompanyProfile.findById({ _id: companyId });
+
+    if (!companyExist) {
+      res.status(404);
+      throw new Error("Company does not exist");
+    }
+
+    if (companyExist.user_id.toString() !== userId) {
+      res.status(401);
+      throw new Error("Unauthorized access");
+    }
+
+    await CompanyProfile.findByIdAndDelete({ _id: companyId });
+
+    res.status(200).json({ status: 200, message: "Company deleted successfully" });
+  }
+
+  
 
   static async addEmployee(req, res) {
     const roleId = req.role;
@@ -231,6 +350,8 @@ class Company {
     res.status(400);
     throw new Error("Employee or email already exist");
   }
+
+  
 }
 
 export default Company;
