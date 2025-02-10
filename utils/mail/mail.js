@@ -19,13 +19,17 @@ const sendEmail = async (name,email,_id,emailType) => {
     });
 
     // Render the template with the data
+   // console.log(_id,process.env.DOMAIN,emailType);
+    //console.log(`${process.env.DOMAIN}/${emailType}/${_id}`);
+    
     const htmlToSend = fileToSent({name,_id,DOMAIN:process.env.DOMAIN,route:emailType});
+    
 
 
     const mailOptions = {
       from: process.env.EMAIL, // sender address
       to: email, // list of receivers
-      subject: emailType==="verification"?"verification":"resetpassword", // Subject line
+      subject: emailType==="verification"?"verification":"reset-password", // Subject line
       html: htmlToSend, // HTML body
     };
 

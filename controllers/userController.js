@@ -5,6 +5,7 @@ import { generateToken } from "../utils/token/jwtToken.js";
 import sendEmail from "../utils/mail/mail.js";
 import VerificationToken from "../models/verifyToken.js";
 import crypto from "crypto";
+import UserMetaData from "../models/userMetaData.js";
 
 class UserClass {
   // user registration
@@ -190,7 +191,7 @@ class UserClass {
 
     if (!email) {
       res.status(400);
-      const error = new Error("Please fill all the fields");
+      const error = new Error("Please enter the email");
       throw error;
     }
     const lowerCaseEmail = email.toLowerCase();
@@ -222,7 +223,7 @@ class UserClass {
         expiry: Date.now() + 3600000,
       });
     }
-    await sendEmail(userExist.name, email, token, "resetpassword");
+    await sendEmail(userExist.name, email, token, "reset-password");
 
     return res
       .status(200)
@@ -267,9 +268,140 @@ class UserClass {
       .status(200)
       .json({ status: 201, message: "Password Reset Successfully" });
   }
+  // update user
+
+
+static async updateUser(req,res){
+  const userId = req.user;
+
+  const UserExist=await User.findById(userId);
+  if(!UserExist){
+    res.status(400);
+    throw new Error("User not found");
+  }
+  const {name,email}=req.body;
+  if(name){
+    UserExist.name=name;
+  }
+  if(email){
+    UserExist.email=email;
+  }
+  await UserExist.save();
+  return res.status(200).json({status:200,message:"User updated successfully"});
+
+  
+}
+// delete user
+static async deleteUser(req,res){
+  const userId=req.user;
+  const roleId=req.role;
+
+  const roleExist=await Role.findById(roleId);
+
+  if(roleExist.role!=="admin" && roleExist.role!=="superadmin"){
+    res.status(400);
+    throw new Error("You are not authorized to delete user");
+  }
+  const UserExist=await User.findById(userId);
+
+}
+// add user metadata
+static async addMetaData(req,res){
+  const file=req.file;
+
+  const user_id=req.user;
+  try {
+    const {phone,city,zip,street}=req.body;
+    const userExist=await User.findById(user_id);
+    if(!userExist){
+      res.status(400);
+      throw new Error("User not found");
+    }
+   const savedMetaData= await UserMetaData.create({
+      user_id,
+      phone,
+      city,
+      zip,
+      street,
+      profile_image:file.path
+    });
+    return res.status(200).json({status:200,message:"User metadata added successfully",data:savedMetaData});
+  } catch (error) {
+    res.status(400);
+    throw new Error(error);
+    
+  }
+}
+// get user metadata
+static async getMetaData(req,res){
+  const user_id=req.user;
+  try {
+    const userExist=await User.findById(user_id);
+    if(!userExist){
+      res.status(400);
+      throw new Error("User not found");
+    }
+    const metaData=await UserMetaData.findOne({user_id});
+    if(!metaData){
+      res.status(400);
+      throw new Error("No metadata found");
+    }
+    const data = { ...metaData._doc, name: userExist.name,email:userExist.email };
+    return res.status(200).json({status:200,data});
+  } catch (error) {
+    res.status(400);
+    throw new Error(error);
+    
+  }
+
+}
+// update user metadata
+
+static async updateMetaData(req,res){
+  const user_id=req.user;
+  const file=req.file;
   
 
+  try {
+    const path="";
+    if(file){
+      path=file.path;
+    }
 
+    const {phone,city,zip,street}=req.body;
+    const userExist=await User.findById(user_id);
+    if(!userExist){
+      res.status(400);
+      throw new Error("User not found");
+    }
+    const metaData=await UserMetaData.findOne({user_id});
+    if(!metaData){
+      res.status(400);
+      throw new Error("No metadata found");
+    }
+    if(phone){
+      metaData.phone=phone;
+    }
+    if(city){
+      metaData.city=city;
+    }
+    if(zip){
+      metaData.zip=zip;
+    }
+    if(street){
+      metaData.street=street;
+    }
+    if(path){
+      metaData.profile_image=path;
+    }
+    await metaData.save();
+    return res.status(200).json({status:200,message:"Metadata updated successfully",data:metaData});
+  } catch (error) {
+    res.status(400);
+    throw new Error(error);
+    
+  }
+}
 
 }
 

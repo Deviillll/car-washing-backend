@@ -157,7 +157,7 @@ class Company {
 
   // update company
   static async updateCompany(req, res) {
-    const companyId = req.params.id;
+    //const companyId = req.params.id;
     const userId = req.user;
     const role = req.role;
     const file = req.file;
@@ -168,18 +168,32 @@ class Company {
       throw new Error("Unauthorized access");
     }
 
-    const { companyName, street, zip, city, email, phone, description } = req.body;
+    const { companyName, street, zip, city, email, phone, description,companyId } = req.body;
+
+    // validate mongoose id
+    const validId = mongoose.Types.ObjectId.isValid(companyId);
+
+    if (!validId) {
+      const error = new Error("Invalid id");
+      res.status(400)
+      throw error;
+    }
+    const objectId = mongoose.Types.ObjectId.createFromHexString(validId);
+
+
+
+
 
     if (!req.file) {
       res.status(400);
       throw new Error("Please upload a logo");
     }
-    if ( !companyName || !street || !zip || !city || !email || !phone || !description) {
+    if ( !companyName || !street || !zip || !city || !email || !phone || !description ) {
       res.status(400);
       throw new Error("Please fill all fields");
     }
 
-    const companyExist = await CompanyProfile.findById({ _id: companyId });
+    const companyExist = await CompanyProfile.findById({ _id: objectId });
 
     if (!companyExist) {
       res.status(404);

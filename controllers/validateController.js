@@ -1,5 +1,6 @@
 import jwt from "jsonwebtoken";
-const validateController = (req, res) => {
+import User from "../models/user.js";
+const validateController =async (req, res) => {
     const authHeader = req.headers.authorization;
     if (!authHeader || !authHeader.startsWith("Bearer ")) {
       const error = new Error(
@@ -24,8 +25,16 @@ const validateController = (req, res) => {
           res.status(400);
           throw error;
         }
+        const user = await User.findById(decoded._id);
+       
+        if (!user) {
+          const error = new Error("User not found");
+          res.status(400);
+          throw error;
+        }
 
-        return res.status(200).json({status:"200",message:"Token is valid"});
+
+        return res.status(200).json({status:"200",message:"Token is valid",name:user.name});
       
         
       } catch (ex) {

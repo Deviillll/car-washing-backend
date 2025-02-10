@@ -259,3 +259,74 @@
 {"message":"You have reached the maximum number of companies","timestamp":"2025-02-07T10:18:34.817Z"}
 {"message":"Please upload a logo","timestamp":"2025-02-07T10:28:24.439Z"}
 {"message":"Please upload a logo","timestamp":"2025-02-07T10:28:33.351Z"}
+{"message":"Please upload a logo","timestamp":"2025-02-07T11:09:10.869Z"}
+{"message":"Please upload a logo","timestamp":"2025-02-07T11:09:22.503Z"}
+{"message":"Please upload a logo","timestamp":"2025-02-07T11:09:29.976Z"}
+{"message":"User Already Exists","timestamp":"2025-02-07T12:53:39.721Z"}
+{"message":"Error: User not found","timestamp":"2025-02-07T13:29:24.633Z"}
+{"message":"Error: User not found","timestamp":"2025-02-07T13:39:39.644Z"}
+{"message":"Error: User not found","timestamp":"2025-02-07T13:59:05.949Z"}
+{"message":"You have reached the maximum number of companies","timestamp":"2025-02-07T13:59:38.260Z"}
+{"message":"Error: User not found","timestamp":"2025-02-07T13:59:49.310Z"}
+{"message":"Error: User not found","timestamp":"2025-02-07T14:01:23.821Z"}
+{"message":"Error: User not found","timestamp":"2025-02-07T14:02:18.274Z"}
+{"message":"Error: User not found","timestamp":"2025-02-07T14:03:01.515Z"}
+{"message":"Error: User not found","timestamp":"2025-02-07T14:03:44.460Z"}
+{"message":"Error: User not found","timestamp":"2025-02-07T14:04:47.843Z"}
+{"message":"Error: User not found","timestamp":"2025-02-10T09:15:23.005Z"}
+{"message":"Error: User not found","timestamp":"2025-02-10T09:21:06.488Z"}
+{"message":"TokenExpiredError: jwt expired","timestamp":"2025-02-10T09:21:28.822Z"}
+{"message":"Invalid company","timestamp":"2025-02-10T09:21:37.919Z"}
+{"message":"Catagory already exist","timestamp":"2025-02-10T09:21:57.859Z"}
+{"message":"Invalid company","timestamp":"2025-02-10T09:24:37.543Z"}
+{"message":"Error: User not found","timestamp":"2025-02-10T09:34:48.633Z"}
+{"message":"Error: User not found","timestamp":"2025-02-10T09:36:24.301Z"}
+{"message":"Error: User not found","timestamp":"2025-02-10T09:37:00.241Z"}
+{"message":"Error: User not found","timestamp":"2025-02-10T09:38:15.305Z"}
+{"message":"Error: User not found","timestamp":"2025-02-10T09:39:03.426Z"}
+{"message":"Error: User not found","timestamp":"2025-02-10T09:41:03.694Z"}
+{"message":"Error: User not found","timestamp":"2025-02-10T09:41:57.707Z"}
+{"message":"Error: User not found","timestamp":"2025-02-10T09:41:58.417Z"}
+{"message":"Error: User not found","timestamp":"2025-02-10T09:43:45.817Z"}
+{"message":"Catagory already exist","timestamp":"2025-02-10T09:45:10.949Z"}
+{"message":"Error: User not found","timestamp":"2025-02-10T09:49:20.204Z"}
+{"message":"Error: User not found","timestamp":"2025-02-10T09:51:12.803Z"}
+{"message":"Error: User not found","timestamp":"2025-02-10T09:51:26.587Z"}
+{"message":"Error: User not found","timestamp":"2025-02-10T09:52:44.185Z"}
+{"message":"Error: User not found","timestamp":"2025-02-10T09:53:22.889Z"}
+{"message":"Error: User not found","timestamp":"2025-02-10T09:55:50.553Z"}
+{"message":"Error: User not found","timestamp":"2025-02-10T09:58:23.331Z"}
+{"message":"Error: User not found","timestamp":"2025-02-10T09:58:47.203Z"}
+{"message":"Error: User not found","timestamp":"2025-02-10T09:59:10.426Z"}
+{"message":"Error: User not found","timestamp":"2025-02-10T10:03:34.525Z"}
+{"message":"Error: User not found","timestamp":"2025-02-10T10:05:31.360Z"}
+{"message":"Error: User not found","timestamp":"2025-02-10T10:07:25.669Z"}
+{"message":"Error: User not found","timestamp":"2025-02-10T10:09:35.531Z"}
+{"message":"Error: User not found","timestamp":"2025-02-10T10:15:47.276Z"}
+{"message":"Error: User not found","timestamp":"2025-02-10T10:16:02.478Z"}
+{"message":"Error: User not found","timestamp":"2025-02-10T10:16:43.317Z"}
+{"message":"Error: User not found","timestamp":"2025-02-10T10:18:25.189Z"}
+{"message":"Error: User not found","timestamp":"2025-02-10T10:19:38.248Z"}
+{"message":"Error: User not found","timestamp":"2025-02-10T10:20:29.738Z"}
+{"message":"Error: User not found","timestamp":"2025-02-10T10:20:50.906Z"}
+{"message":"Error: User not found","timestamp":"2025-02-10T10:21:36.720Z"}
+{"message":"Error: User not found","timestamp":"2025-02-10T10:22:31.746Z"}
+{"message":"Error: User not found","timestamp":"2025-02-10T10:23:23.930Z"}
+{"message":"Error: User not found","timestamp":"2025-02-10T10:23:52.593Z"}
+{"message":"TokenExpiredError: jwt expired","timestamp":"2025-02-10T10:50:29.931Z"}
+{"message":"company id is required","timestamp":"2025-02-10T10:50:47.574Z"}
+{"message":"Catagory already exist","timestamp":"2025-02-10T11:09:22.792Z"}
+{"message":"Catagory already exist","timestamp":"2025-02-10T11:09:30.109Z"}
+{"message":"ReferenceError: userId is not defined","timestamp":"2025-02-10T12:17:43.728Z"}
+{"message":"ReferenceError: userId is not defined","timestamp":"2025-02-10T12:18:43.708Z"}
+{"message":"ReferenceError: UserMetaData is not defined","timestamp":"2025-02-10T12:19:22.184Z"}
+{"message":"TypeError: Cannot read properties of undefined (reading 'path')","timestamp":"2025-02-10T13:32:25.795Z"}
+{"message":"TypeError: Cannot read properties of undefined (reading 'path')","timestamp":"2025-02-10T13:34:48.762Z"}
+{"message":"TypeError: Cannot read properties of undefined (reading 'path')","timestamp":"2025-02-10T13:36:46.012Z"}
+{"message":"TypeError: Cannot read properties of undefined (reading 'path')","timestamp":"2025-02-10T13:36:55.070Z"}
+{"message":"TypeError: Cannot read properties of undefined (reading 'path')","timestamp":"2025-02-10T13:37:05.220Z"}
+{"message":"TypeError: Cannot read properties of undefined (reading 'path')","timestamp":"2025-02-10T13:37:47.103Z"}
+{"message":"TypeError: Cannot read properties of undefined (reading 'path')","timestamp":"2025-02-10T13:38:33.620Z"}
+{"message":"TypeError: Cannot read properties of undefined (reading 'path')","timestamp":"2025-02-10T13:41:35.018Z"}
+{"message":"Please fill all fields","timestamp":"2025-02-10T14:01:41.197Z"}
+{"message":"Please fill all fields","timestamp":"2025-02-10T14:08:53.118Z"}

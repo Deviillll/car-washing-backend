@@ -16,6 +16,6 @@ companyRoute.get("/all-company", asyncHandler(Company.getAllCompaniesWithService
 companyRoute.get("/company",authMiddleware, asyncHandler(Company.getCompanies));
 companyRoute.delete("/company/:id",authMiddleware, asyncHandler(Company.deleteCompany));
 companyRoute.get("/company/:id", authMiddleware, asyncHandler(Company.getCompany));
-companyRoute.put("/company/:id", authMiddleware,upload, asyncHandler(Company.updateCompany));
+companyRoute.put("/company", authMiddleware,upload, asyncHandler(Company.updateCompany));
 
 export default companyRoute;

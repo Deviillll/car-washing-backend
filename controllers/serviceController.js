@@ -8,12 +8,12 @@ import Service from "../models/service.js";
 class ServiceClass {
   static async createServices(req, res) {
    try {
-    const { name, description, price, companyId, time ,category} = req.body;
+    const { serviceName, serviceDescription, servicePrice, companyId, serviceTime ,categoryId} = req.body;
 
     const userId = req.user;
     const role = req.role;
 
-    if (!name || !description || !price || !companyId || !time || !category) {
+    if (!serviceName || !serviceDescription || !servicePrice || !companyId || !serviceTime || !categoryId) {
       res.status(400);
       throw new Error("Please fill all fields");
     }
@@ -29,16 +29,18 @@ class ServiceClass {
       res.status(401);
       throw new Error("Unauthorized access");
     }
-    const objectRoleID = mongoose.isValidObjectId(companyId);
+    const objectCompanyId = mongoose.Types.ObjectId.createFromHexString(companyId);
+    const validCompanyId = mongoose.isValidObjectId(objectCompanyId);
 
-    if (!objectRoleID) {
+    if (!validCompanyId) {
       res.status(400);
       throw new Error("Invalid company");
     }
+    const objectCategoryId = mongoose.Types.ObjectId.createFromHexString(categoryId);
+    
+    const validCategoryId = mongoose.isValidObjectId(objectCategoryId);
 
-    const objectCatagoryID = mongoose.isValidObjectId(category);
-
-    if (!objectCatagoryID) {
+    if (!validCategoryId) {
       res.status(400);
       throw new Error("Invalid category");
     }
@@ -54,12 +56,12 @@ class ServiceClass {
     }
 
     const newService = new Service({
-      name,
-      description,
-      price,
+      name: serviceName,
+      description: serviceDescription,
+      price: servicePrice,
       company: companyId,
-      time,
-     category,
+      time: serviceTime,
+     category:categoryId,
     });
 
     let q = await newService.save();
@@ -80,64 +82,100 @@ class ServiceClass {
   }
 
 
+  
   static async getServices(req, res) {
+    const {objectId}=mongoose.Types;
     try {
-      const { companyId } = req.body;
-      const userId = req.user;
-      const role = req.role;
+        const { companyId } = req.query;
+        const userId = req.user;
+        const role = req.role;
 
-      if (!companyId) {
-        res.status(400);
-        throw new Error("company id is required");
-      }
+        if (!companyId) {
+            return res.status(400).json({ error: "Company ID is required" });
+        }
 
-      const getRole = await Role.findById({ _id: role });
-      if (!getRole) {
-        res.status(401);
-        throw new Error("Unauthorized access");
-      }
+        const getRole = await Role.findById({ _id: role });
+        if (!getRole) {
+            return res.status(401).json({ error: "Unauthorized access" });
+        }
 
-      if (getRole.role !== "admin" && getRole.role !== "manager") {
-        res.status(401);
-        throw new Error("Unauthorized access");
-      }
-      const objectRoleID = mongoose.isValidObjectId(companyId);
+        if (getRole.role !== "admin" && getRole.role !== "manager") {
+            return res.status(401).json({ error: "Unauthorized access" });
+        }
+        const objectCompanyId = mongoose.Types.ObjectId.createFromHexString(companyId);
+        const isValidObjectId = mongoose.isValidObjectId(objectCompanyId);
+        if (!isValidObjectId) {
+            return res.status(400).json({ error: "Invalid company" });
+        }
 
-      if (!objectRoleID) {
-        res.status(400);
-        throw new Error("Invalid company");
-      }
-
-      const resolver = await Resolver.findOne({
-        user_id: userId,
-        company_id: companyId
-      });
-      if (!resolver) {
-        res.status(401);
-        throw new Error("Unauthorized access");
-      }
-
-      const service = await Service.find({ company: companyId });
-      if (!service) {
-        res.status(404);
-
-        throw new Error("No service found");
-
-      }
-
-      return res
-        .status(200)
-        .json({
-          status: 200,
-          message: "data fetch successfully",
-          data: service,
+        const resolver = await Resolver.findOne({
+            user_id: userId,
+            company_id: companyId
         });
+        if (!resolver) {
+            return res.status(401).json({ error: "Unauthorized access" });
+        }
+        //const services = await Service.find({ company: objectCompanyId });
+
+        const services = await Service.aggregate([
+            { $match: { company: objectCompanyId } },
+            {
+                $lookup: {
+                    from: 'tbl_categories',
+                    localField: 'category',
+                    foreignField: '_id',
+                    as: 'categoryDetails'
+                }
+            },
+            {
+                $lookup: {
+                    from: 'tbl_companyprofiles',
+                    localField: 'company',
+                    foreignField: '_id',
+                    as: 'companyDetails'
+                }
+            },
+            {
+                $unwind: '$categoryDetails'
+            },
+            {
+                $unwind: '$companyDetails'
+            },
+            {
+                $project: {
+                    _id: 1,
+                    name: 1,
+                    description: 1,
+                    price: 1,
+                    time: 1,
+                    categoryName: '$categoryDetails.name',
+                    companyName: '$companyDetails.',
+                    categoryId: '$categoryDetails._id',
+                    companyId: '$companyDetails._id'
+                }
+            }
+        ]);
+      
+      
+
+        if (!services || services.length === 0) {
+            return res.status(404).json({ error: "No service found" });
+        }
+
+        return res.status(200).json({
+            status: 200,
+            message: "Data fetched successfully",
+            data: services,
+        });
+
     } catch (error) {
-      throw new Error(error.message);
+        return res.status(500).json({ error: error.message });
     }
-  }
+}
+
 
  static async addCatagory(req, res) {
+  const { ObjectId } = mongoose.Types;
     try {
       const { name, description, companyId } = req.body;
 
@@ -149,7 +187,9 @@ class ServiceClass {
       res.status(400);
       throw new Error("Please upload a logo");
     }
-
+//console.log(companyId);
+// const objectId2 =new ObjectId(companyId);
+// console.log(objectId2);
 
     if (!name || !description || !companyId) {
       res.status(400);
@@ -166,7 +206,11 @@ class ServiceClass {
       res.status(401);
       throw new Error("Unauthorized access");
     }
-    const objectRoleID = mongoose.isValidObjectId(companyId);
+    const objectCompanyId = mongoose.Types.ObjectId.createFromHexString(companyId);
+    const objectRoleID = mongoose.isValidObjectId(objectCompanyId);
+    //console.log(objectCompanyId);
+
+    //console.log(objectRoleID);
 
     if (!objectRoleID) {
       res.status(400);
@@ -216,63 +260,116 @@ class ServiceClass {
 
   // get all categories
   static async getCatagory(req, res) {
+    const { companyId } = req.query;  // Ensure companyId is being passed as a query parameter
     try {
-      const { companyId } = req.body;
-      const userId = req.user;
-      const role = req.role;
 
-      if (!companyId) {
-        res.status(400);
-        throw new Error("company id is required");
-      }
+        const userId = req.user;
+        const role = req.role;
 
-      const getRole = await Role.findById({ _id: role });
-      if (!getRole) {
-        res.status(401);
-        throw new Error("Unauthorized access");
-      }
+        if (!companyId) {
+            return res.status(400).json({ error: "Company ID is required" });
+        }
 
-      if (getRole.role !== "admin" && getRole.role !== "manager") {
-        res.status(401);
-        throw new Error("Unauthorized access");
-      }
-      const objectRoleID = mongoose.isValidObjectId(companyId);
+        const getRole = await Role.findById({ _id: role });
+        if (!getRole) {
+            return res.status(401).json({ error: "Unauthorized access" });
+        }
 
-      if (!objectRoleID) {
-        res.status(400);
-        throw new Error("Invalid company");
-      }
+        if (getRole.role !== "admin" && getRole.role !== "manager") {
+            return res.status(401).json({ error: "Unauthorized access" });
+        }
 
-      const resolver = await Resolver.findOne({
-        user_id: userId,
-        company_id: companyId
-      });
+        const objectCompanyId = mongoose.Types.ObjectId.createFromHexString(companyId);
+        const objectRoleID = mongoose.isValidObjectId(objectCompanyId);
 
+        if (!objectRoleID) {
+            return res.status(400).json({ error: "Invalid company" });
+        }
 
-      if (!resolver) {
-        res.status(401);
-        throw new Error("Unauthorized access");
-      }
-
-      const catagory = await Catagory.find({ company: companyId });
-      if (!catagory) {
-        res.status(404);
-        throw new Error("No catagory found");
-      }
-
-      return res
-        .status(200)
-        .json({
-          status: 200,
-          message: "data fetch successfully",
-          data: catagory,
+        const resolver = await Resolver.findOne({
+            user_id: userId,
+            company_id: companyId
         });
 
+        if (!resolver) {
+            return res.status(401).json({ error: "Unauthorized access" });
+        }
 
-      } catch (error) {
-        throw new Error(error.message);
-      }
-    }   
+        const catagory = await Catagory.find({ company: companyId });
+        if (!catagory) {
+            return res.status(404).json({ error: "No category found" });
+        }
+
+        return res.status(200).json({
+            status: 200,
+            message: "Data fetched successfully",
+            data: catagory,
+        });
+
+    } catch (error) {
+        return res.status(500).json({ error: error.message });
+    }
+}
+
+    
+    // delete category
+    static async deleteCatagory(req, res) {
+      try {
+        const { catagoryId } = req.body;
+        const userId = req.user;
+        const role = req.role;
+    
+        if (!catagoryId) {
+          res.status(400);
+          throw new Error("catagory id is required");
+        }
+    
+        const getRole = await Role.findById({ _id: role });
+        if (!getRole) {
+          res.status(401);
+          throw new Error("Unauthorized access");
+        }
+    
+        if (getRole.role !== "admin" && getRole.role !== "manager") {
+          res.status(401);
+          throw new Error("Unauthorized access");
+        }
+        const objectRoleID = mongoose.isValidObjectId(catagoryId);
+    
+        if (!objectRoleID) {
+          res.status(400);
+          throw new Error("Invalid catagory");
+        }
+    
+        const resolver = await Resolver.findOne({
+          user_id: userId,
+          catagory_id: catagoryId
+        });
+        if (!resolver) {
+          res.status(401);
+          throw new Error("Unauthorized access");
+        }
+    
+        const catagory = await Catagory.findByIdAndDelete({ _id: catagoryId }); 
+        if (!catagory) {
+          res.status(404);
+          throw new Error("No catagory found");
+        }
+
+
+        res
+          .status(200)
+          .json({
+            status: 200,
+            message: "Catagory deleted successfully",
+          });}
+          catch(error){
+            throw new Error(error.message);
+          }
+        }
+
+
+
 }
 
 
