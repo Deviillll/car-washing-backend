@@ -334,3 +334,25 @@
 {"message":"Please fill all fields","timestamp":"2025-02-10T14:16:48.427Z"}
 {"message":"Please fill all fields","timestamp":"2025-02-10T14:18:21.812Z"}
 {"message":"Please fill all fields","timestamp":"2025-02-10T14:20:06.587Z"}
+{"message":"Catagory already exist","timestamp":"2025-02-11T10:07:49.004Z"}
+{"message":"TokenExpiredError: jwt expired","timestamp":"2025-02-11T10:09:05.701Z"}
+{"message":"Catagory already exist","timestamp":"2025-02-11T10:13:52.098Z"}
+{"message":"Invalid id","timestamp":"2025-02-11T10:45:12.789Z"}
+{"message":"Catagory already exist","timestamp":"2025-02-11T10:46:10.940Z"}
+{"message":"Please upload a logo","timestamp":"2025-02-11T10:56:17.272Z"}
+{"message":"Please fill all fields","timestamp":"2025-02-11T11:01:09.156Z"}
+{"message":"Please fill all fields","timestamp":"2025-02-11T11:22:46.699Z"}
+{"message":"Please fill all fields","timestamp":"2025-02-11T11:23:42.636Z"}
+{"message":"Please upload a logo","timestamp":"2025-02-11T13:02:33.464Z"}
+{"message":"Please upload a logo","timestamp":"2025-02-11T13:03:17.333Z"}
+{"message":"Please upload a logo","timestamp":"2025-02-11T13:05:54.047Z"}
+{"message":"Invalid service","timestamp":"2025-02-11T13:06:27.252Z"}
+{"message":"TypeError: Cannot read properties of undefined (reading 'path')","timestamp":"2025-02-11T13:44:11.747Z"}
+{"message":"catagory id is required","timestamp":"2025-02-11T13:45:42.498Z"}
+{"message":"TypeError: Cannot read properties of undefined (reading 'path')","timestamp":"2025-02-11T14:00:42.988Z"}
+{"message":"TypeError: Cannot read properties of undefined (reading 'path')","timestamp":"2025-02-11T14:08:26.377Z"}
+{"message":"TypeError: Cannot read properties of undefined (reading 'path')","timestamp":"2025-02-11T14:10:07.822Z"}
+{"message":"TypeError: Cannot read properties of undefined (reading 'path')","timestamp":"2025-02-11T14:10:52.449Z"}
+{"message":"TypeError: Cannot read properties of undefined (reading 'path')","timestamp":"2025-02-11T14:10:52.571Z"}
+{"message":"TypeError: Cannot read properties of undefined (reading 'path')","timestamp":"2025-02-11T14:11:13.974Z"}
+{"message":"TypeError: Cannot read properties of undefined (reading 'path')","timestamp":"2025-02-11T14:11:34.260Z"}

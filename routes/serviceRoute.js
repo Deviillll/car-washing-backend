@@ -11,6 +11,25 @@ serviceRoute.post(
   authMiddleware,
   asyncHandler(ServiceClass.createServices)
 );
+serviceRoute.get("/service", authMiddleware, asyncHandler(ServiceClass.getServices));
+serviceRoute.patch(
+  "/service",
+  authMiddleware,
+  asyncHandler(ServiceClass.updateService)
+);
+serviceRoute.delete(
+  "/service/:serviceId",
+  authMiddleware,
+  asyncHandler(ServiceClass.deleteService)
+);
+
+
+
+// Category
+
+
+
+
 serviceRoute.post(
   "/category",
   authMiddleware,
@@ -18,7 +37,20 @@ serviceRoute.post(
   asyncHandler(ServiceClass.addCatagory)
 );
 
-serviceRoute.get("/service", authMiddleware, asyncHandler(ServiceClass.getServices));
 serviceRoute.get("/category", authMiddleware, asyncHandler(ServiceClass.getCatagory));
+
+serviceRoute.patch(
+  "/category",
+  authMiddleware,
+  upload,
+  asyncHandler(ServiceClass.updateCatagory));
+
+serviceRoute.delete(
+  "/category/:categoryId",
+  authMiddleware,
+  asyncHandler(ServiceClass.deleteCatagory)
+);
+  
+  
 
 export default serviceRoute;

@@ -1,4 +1,5 @@
 import CompanyProfile from "../models/companyProfile.js";
+import mongoose from "mongoose";
 
 import fs from "fs/promises";
 import Resolver from "../models/resolver.js";
@@ -169,16 +170,18 @@ class Company {
     }
 
     const { companyName, street, zip, city, email, phone, description,companyId } = req.body;
+    
 
     // validate mongoose id
-    const validId = mongoose.Types.ObjectId.isValid(companyId);
+    const objectId = mongoose.Types.ObjectId.createFromHexString(companyId);
+    const validId = mongoose.Types.ObjectId.isValid(objectId);
+   
 
     if (!validId) {
       const error = new Error("Invalid id");
       res.status(400)
       throw error;
     }
-    const objectId = mongoose.Types.ObjectId.createFromHexString(validId);
 
 
 

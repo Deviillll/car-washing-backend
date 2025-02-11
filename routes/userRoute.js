@@ -14,7 +14,7 @@ userRoute.post('/login', asyncHandler(UserClass.loginUser));
 userRoute.get("/verification/:id", asyncHandler(UserClass.verifyController)); 
 userRoute.post('/forgotpassword', asyncHandler(UserClass.forgotPassword));
 userRoute.post('/resetpassword/:id', asyncHandler(UserClass.resetPassword));
-userRoute.put('/update-user', authMiddleware, asyncHandler(UserClass.updateUser));
+userRoute.patch('/update-user', authMiddleware, asyncHandler(UserClass.updateUser));
 userRoute.post('/add-employee',authMiddleware, asyncHandler(Company.addEmployee));
 userRoute.post('/meta-data',authMiddleware,upload, asyncHandler(UserClass.addMetaData));
 userRoute.get('/meta-data',authMiddleware, asyncHandler(UserClass.getMetaData));

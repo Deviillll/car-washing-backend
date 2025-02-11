@@ -357,51 +357,56 @@ static async getMetaData(req,res){
 }
 // update user metadata
 
-static async updateMetaData(req,res){
-  const user_id=req.user;
-  const file=req.file;
-  
+static async updateMetaData(req, res) {
+  const user_id = req.user;
+  const file = req.file;
 
   try {
-    const path="";
-    if(file){
-      path=file.path;
+    let path = null; // Initialize as null
+
+    if (file && file.path) {
+      path = file.path;
     }
 
-    const {phone,city,zip,street}=req.body;
-    const userExist=await User.findById(user_id);
-    if(!userExist){
-      res.status(400);
-      throw new Error("User not found");
+    const { phone, city, zip, street } = req.body;
+    const userExist = await User.findById(user_id);
+    if (!userExist) {
+      return res.status(400).json({ error: "User not found" });
     }
-    const metaData=await UserMetaData.findOne({user_id});
-    if(!metaData){
-      res.status(400);
-      throw new Error("No metadata found");
+
+    const metaData = await UserMetaData.findOne({ user_id });
+    if (!metaData) {
+      return res.status(400).json({ error: "No metadata found" });
     }
-    if(phone){
-      metaData.phone=phone;
+
+    if (phone) {
+      metaData.phone = phone;
     }
-    if(city){
-      metaData.city=city;
+    if (city) {
+      metaData.city = city;
     }
-    if(zip){
-      metaData.zip=zip;
+    if (zip) {
+      metaData.zip = zip;
     }
-    if(street){
-      metaData.street=street;
+    if (street) {
+      metaData.street = street;
     }
-    if(path){
-      metaData.profile_image=path;
+    if (path) {
+      metaData.profile_image = path;
     }
+
     await metaData.save();
-    return res.status(200).json({status:200,message:"Metadata updated successfully",data:metaData});
+    return res.status(200).json({
+      status: 200,
+      message: "Metadata updated successfully",
+      data: metaData,
+    });
   } catch (error) {
-    res.status(400);
-    throw new Error(error);
-    
+    return res.status(500).json({ error: error.message });
   }
 }
+
+
 
 }
 
