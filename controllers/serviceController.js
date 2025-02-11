@@ -8,12 +8,12 @@ import Service from "../models/service.js";
 class ServiceClass {
   static async createServices(req, res) {
    try {
-    const { serviceName, serviceDescription, servicePrice, companyId, serviceTime ,categoryId} = req.body;
+    const { serviceName, serviceDescription, servicePrice, companyId, serviceTime ,category} = req.body;
 
     const userId = req.user;
     const role = req.role;
 
-    if (!serviceName || !serviceDescription || !servicePrice || !companyId || !serviceTime || !categoryId) {
+    if (!serviceName || !serviceDescription || !servicePrice || !companyId || !serviceTime || !category) {
       res.status(400);
       throw new Error("Please fill all fields");
     }
@@ -36,7 +36,7 @@ class ServiceClass {
       res.status(400);
       throw new Error("Invalid company");
     }
-    const objectCategoryId = mongoose.Types.ObjectId.createFromHexString(categoryId);
+    const objectCategoryId = mongoose.Types.ObjectId.createFromHexString(category);
     
     const validCategoryId = mongoose.isValidObjectId(objectCategoryId);
 
@@ -61,7 +61,7 @@ class ServiceClass {
       price: servicePrice,
       company: companyId,
       time: serviceTime,
-     category:categoryId,
+     category:category,
     });
 
     let q = await newService.save();
