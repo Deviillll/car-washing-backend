@@ -28,7 +28,8 @@ class Company {
   
       const { companyName, street, zip, city, email, phone, description ,isMultipleBookingAllow,isAutoConfirmBookingAllow} =
         req.body;
-        
+        console.log(file)
+        console.log(req.body)
   
       if (!req.file) {
         res.status(400);

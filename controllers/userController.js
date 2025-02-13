@@ -84,7 +84,7 @@ class UserClass {
         .json({ status: 201, message: "User Registered Successfully" });
     }
     const error = new Error("User Already Exists");
-    res.status(400);
+    res.status(409);
     throw error;
   }
   // user login
@@ -101,7 +101,7 @@ class UserClass {
 
     if (!userExist) {
       const error = new Error("User Does Not Exist");
-      res.status(400);
+      res.status(401);
       throw error;
     }
     const isverified = userExist.isverified;
@@ -110,18 +110,18 @@ class UserClass {
 
     if (isDeleted) {
       const error = new Error("User Does Not Exist");
-      res.status(400);
+      res.status(401);
       throw error;
     }
     if (!isverified) {
       const error = new Error("please verify your email");
-      res.status(400);
+      res.status(403);
       throw error;
     }
 
     if (!isactive) {
       const error = new Error("Your account is not active");
-      res.status(400);
+      res.status(403);
       throw error;
     }
 
@@ -129,7 +129,7 @@ class UserClass {
 
     if (!passwordMatch) {
       const error = new Error("Invalid Credentials");
-      res.status(400);
+      res.status(401);
       throw error;
     }
 
@@ -137,7 +137,7 @@ class UserClass {
     const role = await Role.findById(userExist.role);
     if (!role) {
       const error = new Error("Role not found");
-      res.status(400);
+      res.status(401);
       throw error;
     }
     const user = {
@@ -149,9 +149,9 @@ class UserClass {
     };
 
     return res
-      .status(201)
+      .status(200)
       .json({
-        status: 201,
+        status: 200,
         message: "User Logged In Successfully",
         token,
         user,
@@ -170,7 +170,7 @@ class UserClass {
       throw new Error("invalid token");
     }
     if (existUser.isverified) {
-      res.status(400);
+      res.status(401);
       throw new Error("user already verified");
     }
 
@@ -197,7 +197,7 @@ class UserClass {
     const lowerCaseEmail = email.toLowerCase();
     const userExist = await User.findOne({ email: lowerCaseEmail });
     if (!userExist) {
-      return res.status(400).json({ error: "User Does Not Exist" });
+      return res.status(401).json({ error: "User Does Not Exist" });
     }
     const generateRandomString = (length) => {
       return crypto
@@ -252,7 +252,7 @@ class UserClass {
     const userExist = await User.findOne({ _id: verifyTokenExist.userId });
 
     if (!userExist) {
-      res.status(400);
+      res.status(401);
       throw new Error("User Does Not Exist");
     }
 
@@ -266,7 +266,7 @@ class UserClass {
 
     return res
       .status(200)
-      .json({ status: 201, message: "Password Reset Successfully" });
+      .json({ status: 200, message: "Password Reset Successfully" });
   }
   // update user
 
@@ -287,7 +287,8 @@ static async updateUser(req,res){
     UserExist.email=email;
   }
   await UserExist.save();
-  return res.status(200).json({status:200,message:"User updated successfully"});
+
+  return res.status(201).json({status:201,message:"User updated successfully"});
 
   
 }
@@ -299,10 +300,17 @@ static async deleteUser(req,res){
   const roleExist=await Role.findById(roleId);
 
   if(roleExist.role!=="admin" && roleExist.role!=="superadmin"){
-    res.status(400);
+    res.status(401);
     throw new Error("You are not authorized to delete user");
   }
   const UserExist=await User.findById(userId);
+  if(!UserExist){
+    res.status(400);
+    throw new Error("User not found");
+  }
+  UserExist.isDeleted=true;
+  await UserExist.save();
+  return res.status(200).json({status:200,message:"User deleted successfully"});
 
 }
 // add user metadata
@@ -325,7 +333,7 @@ static async addMetaData(req,res){
       street,
       profile_image:file.path
     });
-    return res.status(200).json({status:200,message:"User metadata added successfully",data:savedMetaData});
+    return res.status(201).json({status:201,message:"User metadata added successfully",data:savedMetaData});
   } catch (error) {
     res.status(400);
     throw new Error(error);
@@ -344,7 +352,7 @@ static async getMetaData(req,res){
     const metaData=await UserMetaData.findOne({user_id});
     if(!metaData){
       res.status(400);
-      throw new Error("No metadata found");
+      throw new Error("No data found");
     }
     const data = { ...metaData._doc, name: userExist.name,email:userExist.email };
     return res.status(200).json({status:200,data});
@@ -368,7 +376,7 @@ static async updateMetaData(req, res) {
       path = file.path;
     }
 
-    const { phone, city, zip, street } = req.body;
+    const { phone, city, zip, street,fullName } = req.body;
     const userExist = await User.findById(user_id);
     if (!userExist) {
       return res.status(400).json({ error: "User not found" });
@@ -377,6 +385,10 @@ static async updateMetaData(req, res) {
     const metaData = await UserMetaData.findOne({ user_id });
     if (!metaData) {
       return res.status(400).json({ error: "No metadata found" });
+    }
+    if (fullName) {
+      userExist.name = fullName;
+      await userExist.save();
     }
 
     if (phone) {
@@ -396,10 +408,11 @@ static async updateMetaData(req, res) {
     }
 
     await metaData.save();
-    return res.status(200).json({
-      status: 200,
-      message: "Metadata updated successfully",
-      data: metaData,
+    const metaDataWithName={...metaData._doc,name:userExist.name,email:userExist.email};
+    return res.status(201).json({
+      status: 201,
+      message: "profile updated successfully",
+      data: metaDataWithName,
     });
   } catch (error) {
     return res.status(500).json({ error: error.message });

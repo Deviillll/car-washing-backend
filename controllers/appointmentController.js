@@ -418,5 +418,84 @@ class AppointmentClass {
       });
     }
   }
+  static async getAppointments(req, res) {
+    const { companyId } = req.params;
+    try {
+      const companyExist = await CompanyProfile.findById(companyId);
+      if (!companyExist) {
+        res.status(400);
+        throw new Error("Company does not exist");
+      }
+      const appointments = await Appointment.find({ company_id: companyId });
+      if (!appointments || appointments.length < 1) {
+        res.status(400);
+        throw new Error("No appointments found");
+      }
+
+
+      res.status(200).json({
+        status: 200,
+        message: "Appointments retrieved successfully",
+        appointments,
+      });
+
+    } catch (error) {
+      res.status(500).json({
+        status: 500,
+        message: error.message,
+      });
+    }
+  }
+static async deleteAppointment(req, res) {
+    const { appointmentId } = req.params;
+    try {
+      const appointment = await Appointment.findByIdAndDelete(appointmentId);
+      if (!appointment) {
+        res.status(400);
+        throw new Error("Appointment not found");
+      }
+
+      res.status(200).json({
+        status: 200,
+        message: "Appointment deleted successfully",
+      });
+    } catch (error) {
+      res.status(500).json({
+        status: 500,
+        message: error.message,
+      });
+    }
+  }
+
+  static async updateAppointment(req, res) {
+    const { appointmentId } = req.params;
+    const { appointmentStatus } = req.body;
+    try {
+      const appointment = await Appointment.findByIdAndUpdate(
+        appointmentId,
+        { appointmentStatus },
+        { new: true }
+      );
+      if (!appointment) {
+        res.status(400);
+        throw new Error("Appointment not found");
+      }
+
+      res.status(200).json({
+        status: 200,
+        message: "Appointment updated successfully",
+        appointment,
+      });
+    } catch (error) {
+      res.status(500).json({
+        status: 500,
+        message: error.message,
+      });
+    }
+  }
+
+
+
+
 }
 export default AppointmentClass;

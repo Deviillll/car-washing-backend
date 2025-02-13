@@ -6,6 +6,9 @@ const timeTableRoute = express.Router();
 
 
 timeTableRoute.post('/schedule',authMiddleware, asyncHandler(ScheduleClass.createSchedule) );
-timeTableRoute.get('/schedule',authMiddleware, asyncHandler(ScheduleClass.getSchedule) );
+timeTableRoute.get('/schedule/:companyId',authMiddleware, asyncHandler(ScheduleClass.getSchedule) );
+timeTableRoute.patch('/schedule/:companyId',authMiddleware, asyncHandler(ScheduleClass.updateSchedule) );
+timeTableRoute.delete('/schedule/:companyId',authMiddleware, asyncHandler(ScheduleClass.deleteSchedule) );
+timeTableRoute.get('/single-schedule/:companyId',authMiddleware, asyncHandler(ScheduleClass.getSingleSchedule) );
 
 export default timeTableRoute;
