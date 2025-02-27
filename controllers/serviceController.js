@@ -85,34 +85,36 @@ class ServiceClass {
     
     try {
         const { companyId } = req.query;
-        const userId = req.user;
-        const role = req.role;
+        // const userId = req.user;
+        // const role = req.role;
 
-        if (!companyId) {
-            return res.status(400).json({ error: "Company ID is required" });
-        }
+        // if (!companyId) {
+        //     return res.status(400).json({ error: "Company ID is required" });
+        // }
 
-        const getRole = await Role.findById({ _id: role });
-        if (!getRole) {
-            return res.status(401).json({ error: "Unauthorized access" });
-        }
+        // const getRole = await Role.findById({ _id: role });
+        // if (!getRole) {
+        //     return res.status(401).json({ error: "Unauthorized access" });
+        // }
 
-        if (getRole.role !== "admin" && getRole.role !== "manager") {
-            return res.status(401).json({ error: "Unauthorized access" });
-        }
+        // if (getRole.role !== "admin" && getRole.role !== "manager") {
+        //     return res.status(401).json({ error: "Unauthorized access" });
+        // }
         const objectCompanyId = mongoose.Types.ObjectId.createFromHexString(companyId);
         const isValidObjectId = mongoose.isValidObjectId(objectCompanyId);
         if (!isValidObjectId) {
             return res.status(400).json({ error: "Invalid company" });
         }
 
-        const resolver = await Resolver.findOne({
-            user_id: userId,
-            company_id: companyId
-        });
-        if (!resolver) {
-            return res.status(401).json({ error: "Unauthorized access" });
-        }
+        // const resolver = await Resolver.findOne({
+        //     user_id: userId,
+        //     company_id: companyId
+        // });
+        // console.log(userId);
+        // console.log(resolver);
+        // if (!resolver) {
+        //     return res.status(401).json({ error: "Unauthorized access" });
+        // }
         //const services = await Service.find({ company: objectCompanyId });
 
        

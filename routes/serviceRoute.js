@@ -11,7 +11,7 @@ serviceRoute.post(
   authMiddleware,
   asyncHandler(ServiceClass.createServices)
 );
-serviceRoute.get("/service", authMiddleware, asyncHandler(ServiceClass.getServices));
+serviceRoute.get("/service",  asyncHandler(ServiceClass.getServices));
 serviceRoute.patch(
   "/service",
   authMiddleware,

@@ -115,7 +115,7 @@ class Company {
       .json({
         status: 200,
         message: "data fetch successfully",
-        data: [companiesWithServices],
+        data: companiesWithServices,
       });
   }
 
