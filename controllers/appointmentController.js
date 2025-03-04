@@ -4,18 +4,17 @@ import Schedule from "../models/timeTableModel.js";
 import PDFDocument from "pdfkit";
 import fs from "fs";
 import sendReceiptEmail from "../utils/mail/receiptMail.js";
-import Stripe from 'stripe';
+import Stripe from "stripe";
 import CompanyProfile from "../models/companyProfile.js";
 import mongoose from "mongoose";
 
 class AppointmentClass {
-
   static async checkTimeAvailability(req, res) {
     try {
-      const { date, time, day, duration, company_id, services } = req.body;
+      const { date, time, day,  company_id, services } = req.body;
 
       // Check if all required fields are provided
-      if (!time || !duration || !company_id || !services) {
+      if (!time || !company_id || !services) {
         res.status(400);
         throw new Error("All fields are required");
       }
@@ -37,14 +36,14 @@ class AppointmentClass {
       }
       const objectId = mongoose.Types.ObjectId.createFromHexString(company_id);
 
-         const validMongoId= mongoose.Types.ObjectId.isValid(objectId);
+      const validMongoId = mongoose.Types.ObjectId.isValid(objectId);
       if (!validMongoId) {
         res.status(400);
         throw new Error("Invalid company id");
       }
 
       const companyExist = await CompanyProfile.findById({ _id: objectId });
-      
+
       if (!companyExist) {
         res.status(400);
         throw new Error("Company not found");
@@ -63,21 +62,31 @@ class AppointmentClass {
 
       // Calculate total service time (sum of all individual service times)
       const serviceTime = serviceDetails.reduce(
-        (acc, service) => acc + service.time,
+        (acc, service) => acc + parseInt(service.time),
         0
       );
 
       // Check if the schedule exists for the given duration and date
-      let schedule;
-      if (duration === "weekly") {
-        schedule = await Schedule.findOne({ company_id, duration, day });
-      } else {
-        schedule = await Schedule.findOne({
-          company_id,
-          duration,
-          dates: { $in: [new Date(date)] },
-        });
+
+      // let schedule;
+      // if (duration === "weekly") {
+      //   schedule = await Schedule.findOne({ company_id, duration, day });
+      // } else {
+      //   schedule = await Schedule.findOne({
+      //     company_id,
+      //     duration,
+      //     dates: { $in: [new Date(date)] },
+      //   });
+      // }
+      let schedule = await Schedule.findOne({
+        company_id,
+        dates: { $in: [new Date(date)] },
+      });
+      
+      if (!schedule) {
+        schedule = await Schedule.findOne({ company_id, day });
       }
+      
 
       if (!schedule) {
         res.status(400);
@@ -110,6 +119,9 @@ class AppointmentClass {
         const companyEndTimeInMinutes = convertToMinutes(companyEndTime);
 
         // Check if requested time fits within company's open hours
+
+       
+
         if (
           startTimeInMinutes >= companyStartTimeInMinutes &&
           endTimeInMinutes <= companyEndTimeInMinutes
@@ -118,7 +130,6 @@ class AppointmentClass {
           break;
         }
       }
-      
 
       if (!isTimeValid) {
         res.status(400);
@@ -138,10 +149,10 @@ class AppointmentClass {
 
       // Check if any other appointment conflicts with the desired time slot
 
-      const overlappingAppointment = await Appointment.findOne({
+      let overlappingAppointment = await Appointment.findOne({
         company_id,
         appointmentDate: new Date(date),
-        appointmentDay: day,
+       // appointmentDay: day,
         $or: [
           {
             // Appointment starts before the requested end time and ends after the requested start time
@@ -155,16 +166,17 @@ class AppointmentClass {
           },
         ],
       });
+      
 
-      if(companyExist.isMultipleBookingAllow && overlappingAppointment) {
-       return res.status(200).json({
+
+      console.log(overlappingAppointment);
+
+      if (companyExist.isMultipleBookingAllow && overlappingAppointment) {
+        return res.status(200).json({
           status: 200,
-          message: "Multiple Appointment available for the requested time slot"
+          message: "Multiple Appointment available for the requested time slot",
         });
       }
-      
-      
-    
 
       if (overlappingAppointment) {
         // Fetch all appointments for the requested date or day
@@ -173,22 +185,22 @@ class AppointmentClass {
           appointmentDate: new Date(date),
           appointmentDay: day,
         });
-      
+
         // Create an array of existing appointment start and end times
-        const existingAppointmentTimes = appointments.map(appointment => ({
+        const existingAppointmentTimes = appointments.map((appointment) => ({
           start: appointment.appointmentTime,
           end: appointment.endTime,
-        }));  
-      
+        }));
+
         // Respond with the overlap error and the list of existing appointment times
         res.status(400).json({
           status: 400,
-          message: "The requested time slot overlaps with an existing appointment.",
+          message:
+            "The requested time slot overlaps with an existing appointment.",
           existingAppointments: existingAppointmentTimes, // Return existing appointment times
         });
         return;
       }
-      
 
       // If no overlap, return available status
       res.status(200).json({
@@ -203,7 +215,7 @@ class AppointmentClass {
       });
     }
   }
- static async createAppointment(req, res) {
+  static async createAppointment(req, res) {
     const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
     const {
       appointmentDate,
@@ -252,7 +264,7 @@ class AppointmentClass {
 
       serviceDetails.forEach((service) => {
         totalPrice += service.price;
-        totalTime += service.time;
+        totalTime += parseInt(service.time);
       });
 
       let finalPrice = totalPrice - (totalPrice * discount) / 100;
@@ -303,18 +315,12 @@ class AppointmentClass {
       }
 
       if (!companyExist.isAutoConfirmBookingAllow) {
-        return  res.status(201).json({
+        return res.status(201).json({
           status: 201,
           message: "Appointment created successfully",
           appointment,
         });
-        
       }
-
-
-
-
-
 
       // Generate a PDF receipt for the appointment
 
@@ -382,13 +388,11 @@ class AppointmentClass {
 
       await sendReceiptEmail(appointment, filePath);
 
-
       // stripe payment
 
-
-      const line_items = serviceDetails.map(item => ({
+      const line_items = serviceDetails.map((item) => ({
         price_data: {
-          currency: 'usd',
+          currency: "usd",
           product_data: {
             name: item.name, // Use the product name from the order item
           },
@@ -396,10 +400,10 @@ class AppointmentClass {
         },
         quantity: 1,
       }));
-  
+
       const session = await stripe.checkout.sessions.create({
         line_items: line_items,
-        mode: 'payment',
+        mode: "payment",
         success_url: `http://localhost:8000?success=true`, // Corrected URL
         cancel_url: `http://localhost:8000?success=false`, // Corrected URL
       });
@@ -432,13 +436,11 @@ class AppointmentClass {
         throw new Error("No appointments found");
       }
 
-
       res.status(200).json({
         status: 200,
         message: "Appointments retrieved successfully",
         appointments,
       });
-
     } catch (error) {
       res.status(500).json({
         status: 500,
@@ -446,7 +448,7 @@ class AppointmentClass {
       });
     }
   }
-static async deleteAppointment(req, res) {
+  static async deleteAppointment(req, res) {
     const { appointmentId } = req.params;
     try {
       const appointment = await Appointment.findByIdAndDelete(appointmentId);
@@ -493,9 +495,5 @@ static async deleteAppointment(req, res) {
       });
     }
   }
-
-
-
-
 }
 export default AppointmentClass;

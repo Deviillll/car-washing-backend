@@ -25,3 +25,6 @@
 {"message":"Schedule not found","timestamp":"2025-02-13T12:46:14.297Z"}
 {"message":"Schedule not found","timestamp":"2025-02-13T12:46:29.115Z"}
 {"message":"Schedule not found","timestamp":"2025-02-13T12:46:37.224Z"}
+{"message":"Please fill all fields","timestamp":"2025-02-28T09:55:50.827Z"}
+{"message":"TokenExpiredError: jwt expired","timestamp":"2025-03-04T07:30:18.808Z"}
+{"message":"Schedule not found","timestamp":"2025-03-04T08:25:52.066Z"}
