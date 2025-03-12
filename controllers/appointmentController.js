@@ -13,6 +13,9 @@ class AppointmentClass {
     try {
       const { date, time, day,  company_id, services } = req.body;
 
+
+      let smallDay = day.toLowerCase();
+
       // Check if all required fields are provided
       if (!time || !company_id || !services) {
         res.status(400);
@@ -54,6 +57,7 @@ class AppointmentClass {
         company: company_id,
         _id: { $in: services },
       });
+    
 
       if (serviceDetails.length !== services.length) {
         res.status(400);
@@ -84,7 +88,7 @@ class AppointmentClass {
       });
       
       if (!schedule) {
-        schedule = await Schedule.findOne({ company_id, day });
+        schedule = await Schedule.findOne({ company_id, day:smallDay });
       }
       
 
@@ -169,7 +173,7 @@ class AppointmentClass {
       
 
 
-      console.log(overlappingAppointment);
+      //console.log(overlappingAppointment);
 
       if (companyExist.isMultipleBookingAllow && overlappingAppointment) {
         return res.status(200).json({
@@ -209,8 +213,7 @@ class AppointmentClass {
         schedule,
       });
     } catch (error) {
-      res.status(500).json({
-        status: 500,
+      res.json({
         message: error.message,
       });
     }

@@ -78,7 +78,7 @@ class Company {
       // es6 to es8
   
       const savedCompany = await newCompany.save();
-      const resolver = Resolver.create({
+      const resolver =await Resolver.create({
         user_id: userId,
         company_id: savedCompany._id,
       });
