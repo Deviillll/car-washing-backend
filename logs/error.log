@@ -28,3 +28,8 @@
 {"message":"Please fill all fields","timestamp":"2025-02-28T09:55:50.827Z"}
 {"message":"TokenExpiredError: jwt expired","timestamp":"2025-03-04T07:30:18.808Z"}
 {"message":"Schedule not found","timestamp":"2025-03-04T08:25:52.066Z"}
+{"message":"All fields are required","timestamp":"2025-03-12T09:59:38.020Z"}
+{"message":"All fields are required","timestamp":"2025-03-12T10:01:27.018Z"}
+{"message":"All fields are required","timestamp":"2025-03-12T10:01:42.221Z"}
+{"message":"All fields are required","timestamp":"2025-03-12T10:02:07.076Z"}
+{"message":"TokenExpiredError: jwt expired","timestamp":"2025-03-26T10:59:32.439Z"}

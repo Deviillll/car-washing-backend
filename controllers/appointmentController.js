@@ -11,8 +11,7 @@ import mongoose from "mongoose";
 class AppointmentClass {
   static async checkTimeAvailability(req, res) {
     try {
-      const { date, time, day,  company_id, services } = req.body;
-
+      const { date, time, day, company_id, services } = req.body;
 
       let smallDay = day.toLowerCase();
 
@@ -34,7 +33,9 @@ class AppointmentClass {
         selectedDate.setHours(0, 0, 0, 0);
         if (selectedDate < currentDate) {
           res.status(400);
-          throw new Error("Date must be greater or equal than the current date");
+          throw new Error(
+            "Date must be greater or equal than the current date"
+          );
         }
       }
       const objectId = mongoose.Types.ObjectId.createFromHexString(company_id);
@@ -57,7 +58,6 @@ class AppointmentClass {
         company: company_id,
         _id: { $in: services },
       });
-    
 
       if (serviceDetails.length !== services.length) {
         res.status(400);
@@ -86,11 +86,10 @@ class AppointmentClass {
         company_id,
         dates: { $in: [new Date(date)] },
       });
-      
+
       if (!schedule) {
-        schedule = await Schedule.findOne({ company_id, day:smallDay });
+        schedule = await Schedule.findOne({ company_id, day: smallDay });
       }
-      
 
       if (!schedule) {
         res.status(400);
@@ -124,8 +123,6 @@ class AppointmentClass {
 
         // Check if requested time fits within company's open hours
 
-       
-
         if (
           startTimeInMinutes >= companyStartTimeInMinutes &&
           endTimeInMinutes <= companyEndTimeInMinutes
@@ -156,7 +153,7 @@ class AppointmentClass {
       let overlappingAppointment = await Appointment.findOne({
         company_id,
         appointmentDate: new Date(date),
-       // appointmentDay: day,
+        // appointmentDay: day,
         $or: [
           {
             // Appointment starts before the requested end time and ends after the requested start time
@@ -170,8 +167,6 @@ class AppointmentClass {
           },
         ],
       });
-      
-
 
       //console.log(overlappingAppointment);
 
@@ -325,6 +320,8 @@ class AppointmentClass {
         });
       }
 
+      const logo = companyExist.logo;
+
       // Generate a PDF receipt for the appointment
 
       const doc = new PDFDocument();
@@ -334,20 +331,26 @@ class AppointmentClass {
 
       // Add title
       doc
-        .fontSize(18)
+        .fontSize(26)
+        .font("Helvetica-Bold")
+        .fillColor("blue")
         .text("Appointment Receipt", { align: "center" })
         .moveDown(2);
 
-      // Add company and appointment details
+      // Add company and appointment details with some styling
       doc
-        .fontSize(12)
-        .text(`Company: ${appointment.company_id}`, { align: "left" })
-        .moveDown();
-      doc
+        .image(`${logo}`, 20, 20, { width: 30 })
+        .fontSize(14)
+        .font("Helvetica")
+        .fillColor("black")
         .text(`Date: ${appointment.appointmentDate.toLocaleDateString()}`, {
-          align: "left",
+          align: "right",
         })
+        .text(`Company: ${companyExist.company_name}`, { align: "left" })
         .moveDown();
+      // doc
+      //   .text(`Date: ${appointment.appointmentDate.toLocaleDateString()}`, { align: "left" })
+      //   .moveDown();
       doc
         .text(`Time: ${appointment.appointmentTime}`, { align: "left" })
         .moveDown();
@@ -358,33 +361,62 @@ class AppointmentClass {
       doc.text(`Email: ${appointment.email}`, { align: "left" }).moveDown();
       doc.text(`Vehicle: ${appointment.vechile}`, { align: "left" }).moveDown();
 
-      // Add services details
-      doc.text("Services:", { underline: true }).moveDown();
+      // Add a section heading for services with underline and color
+      doc
+        .fontSize(16)
+        .font("Helvetica-Bold")
+        .fillColor("darkblue")
+        .text("Services:", { underline: true })
+        .moveDown();
+
+      // Loop through service details and display them with a bullet point
       serviceDetails.forEach((service) => {
         doc
-          .text(`${service.name} - $${service.price}`, { align: "left" })
+          .fontSize(12)
+          .font("Helvetica")
+          .fillColor("black")
+          .text(`• ${service.name} - $${service.price}`, { align: "left" })
           .moveDown();
       });
 
-      // Add total price and discount
+      // Add total price and discount with a larger font for emphasis
       doc
+        .fontSize(14)
+        .font("Helvetica-Bold")
+        .fillColor("green")
         .text(`Total Price: $${appointment.finalPrice}`, { align: "left" })
         .moveDown();
       doc
+        .fontSize(14)
+        .font("Helvetica-Bold")
+        .fillColor("red")
         .text(`Discount: ${appointment.discount}%`, { align: "left" })
         .moveDown();
 
-      // Add the total time of service
+      // Add service end time with a different style (italic)
       doc
-        .text(`Service End Time: ${appointment.endTime}`, {
-          align: "left",
-        })
+        .fontSize(12)
+        .font("Helvetica-Oblique")
+        .fillColor("black")
+        .text(`Service End Time: ${appointment.endTime}`, { align: "left" })
         .moveDown();
 
-      // Add a thank you note at the end
+      // Add a colorful thank you note at the end (centered and bold)
       doc
+        .fontSize(18)
+        .font("Helvetica-Bold")
+        .fillColor("purple")
         .text("Thank you for using our service!", { align: "center" })
         .moveDown();
+
+      // Add a decorative line (could be a dashed line or solid line) to separate sections
+      doc
+        .moveTo(50, doc.y)
+        .lineTo(550, doc.y)
+        .strokeColor("blue")
+        .lineWidth(1)
+        .dash(5, { space: 5 }) // Dashed line
+        .stroke();
 
       // Finalize the PDF document
       doc.end();
@@ -407,8 +439,8 @@ class AppointmentClass {
       const session = await stripe.checkout.sessions.create({
         line_items: line_items,
         mode: "payment",
-        success_url: `http://localhost:8000?success=true`, // Corrected URL
-        cancel_url: `http://localhost:8000?success=false`, // Corrected URL
+        success_url: `${process.env.DOMAIN}?success=true`, // Corrected URL
+        cancel_url: `${process.env.DOMAIN}?success=false`, // Corrected URL
       });
 
       res.status(201).json({
