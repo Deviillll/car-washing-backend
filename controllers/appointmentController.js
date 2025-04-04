@@ -337,9 +337,9 @@ class AppointmentClass {
         .text("Appointment Receipt", { align: "center" })
         .moveDown(2);
 
-      // Add company and appointment details with some styling
+      // Add company and appointment details with 
       doc
-        .image(`${logo}`, 20, 20, { width: 30 })
+       // .image(`${logo}`, 20, 20, { width: 30 })
         .fontSize(14)
         .font("Helvetica")
         .fillColor("black")
